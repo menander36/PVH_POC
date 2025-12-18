@@ -177,18 +177,18 @@ function addToOrder() {
     try {
 
         order.items.forEach(item => {
-            const response = fetch('http://35.176.91.217:39833/WebRestApi/rest/baskets/PRIMARY/items?updatePromotions=true&returnBasket=true', {
+            const response = fetch('http://35.176.91.217:39833/WebRestApi/rest/baskets/PRIMARY/items?updatePromotions=true&returnBasket=false', {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json',
                 'subject':'1'
                 },
                 body: JSON.stringify({
-                    "itemId" : item.sku,
-                    "itemType" : "PRODUCT",
-                    "quantity" : item.qty,
-                    "forOrder": false,
-                    "returnBasket" : false
+                    itemId : item.sku,
+                    itemType : 'PRODUCT',
+                    quantity : item.qty,
+                    forOrder : false,
+                    returnBasket : false
                     })
             });
 
