@@ -177,14 +177,14 @@ function addToOrder() {
     try {
 
         order.items.forEach(item => {
-            const response = fetch('https://corsproxy.org/?http://35.176.91.217:39833/WebRestApi/rest/baskets/PRIMARY/items?updatePromotions=true&returnBasket=false', {
+            const response = fetch('https://corsproxy.org/?http://18.169.109.22:39833/WebRestApi/rest/baskets/PRIMARY/items?updatePromotions=true&returnBasket=false', {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json',
                 'subject':'1'
                 },
                 body: JSON.stringify({
-                    itemId : item.sku,
+                    itemId : '500100',
                     itemType : 'PRODUCT',
                     quantity : item.qty,
                     forOrder : false,
