@@ -177,7 +177,7 @@ function addToOrder() {
     try {
 
         order.items.forEach(item => {
-            const response = fetch('http://35.176.91.217:39833/WebRestApi/rest/baskets/PRIMARY/items?updatePromotions=true&returnBasket=false', {
+            const response = fetch('https://corsproxy.io/?http://35.176.91.217:39833/WebRestApi/rest/baskets/PRIMARY/items?updatePromotions=true&returnBasket=false', {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json',
