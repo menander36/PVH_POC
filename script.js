@@ -173,6 +173,16 @@ function addToOrder() {
     
     // Here you can add your logic to POST to an endpoint
     console.log('Adding to order:', order);
+
+     order.items.forEach(item => {
+        window.parent.postMessage({
+            method: "sendEvent",
+            payload: {
+            "eventName": "QuantitySellProduct",
+            "eventData": { "enactor.mfc.ProductCode": item.sku, "enactor.mfc.ProductQuantity": 1.0}
+            }
+    });
+
     alert(`Order ${selectedOrderId} for ${order.customerName} added successfully!`);
     
     // Example POST request (uncomment and modify as needed):
