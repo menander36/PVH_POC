@@ -181,7 +181,8 @@ function addToOrder() {
             "eventName": "QuantitySellProduct",
             "eventData": { "enactor.mfc.ProductCode": item.sku, "enactor.mfc.ProductQuantity": 1.0}
             }
-        });
+        },"*");
+        
     });
 
     alert(`Order ${selectedOrderId} for ${order.customerName} added successfully!`);
