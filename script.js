@@ -1,0 +1,277 @@
+// State
+let orders = [];
+let selectedOrderId = null;
+
+// DOM Elements
+const orderListEl = document.getElementById('order-list');
+const orderDetailsEl = document.getElementById('order-details');
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+        useMockData();
+});
+
+// Parse the order structure
+function parseOrdersData(data) {
+    const parsedOrders = [];
+    
+    // Handle the structure: {"orders": [...]}
+    const ordersList = data.orders || data;
+    
+    ordersList.forEach(order => {
+        const orderId = order.id;
+        const customerName = order.customer_name;
+        const timestamp = order.timestamp;
+        const items = order.items || [];
+        
+        // Calculate total for the order
+        const orderTotal = items.reduce((sum, item) => {
+            return sum + (item.price * item.qty);
+        }, 0);
+        
+        // Create an entry for the order with all items
+        parsedOrders.push({
+            id: orderId,
+            customerName: customerName,
+            timestamp: timestamp,
+            items: items,
+            total: orderTotal,
+            itemCount: items.length
+        });
+    });
+    
+    return parsedOrders;
+}
+
+// Render Order List
+function renderOrderList() {
+    if (orders.length === 0) {
+        orderListEl.innerHTML = '<p class="placeholder">No orders found.</p>';
+        return;
+    }
+    
+    orderListEl.innerHTML = '';
+    
+    orders.forEach(order => {
+        const orderItem = createOrderItem(order);
+        orderListEl.appendChild(orderItem);
+    });
+}
+
+// Create Order Item Element
+function createOrderItem(order) {
+    const div = document.createElement('div');
+    div.className = 'order-item';
+    if (selectedOrderId === order.id) {
+        div.classList.add('selected');
+    }
+    
+    div.innerHTML = `
+        <div class="order-item-info">
+            <div class="order-item-id">${order.id}</div>
+            <div class="order-item-name">${order.customerName}</div>
+            <div class="order-item-meta">${order.itemCount} item(s) • $${order.total.toFixed(2)}</div>
+        </div>
+    `;
+    
+    div.addEventListener('click', () => selectOrder(order.id));
+    
+    return div;
+}
+
+// Select Order
+function selectOrder(orderId) {
+    selectedOrderId = orderId;
+    const order = orders.find(o => o.id === orderId);
+    
+    if (order) {
+        renderOrderDetails(order);
+        updateSelectedOrderUI();
+    }
+}
+
+// Update Selected Order UI
+function updateSelectedOrderUI() {
+    const orderItems = document.querySelectorAll('.order-item');
+    orderItems.forEach(item => {
+        const orderIdText = item.querySelector('.order-item-id').textContent;
+        
+        if (orderIdText === selectedOrderId) {
+            item.classList.add('selected');
+        } else {
+            item.classList.remove('selected');
+        }
+    });
+}
+
+// Render Order Details
+function renderOrderDetails(order) {
+    let itemsHtml = '';
+    
+    order.items.forEach(item => {
+        const itemTotal = item.price * item.qty;
+        itemsHtml += `
+            <div class="item-row">
+                <img src="${item.thumbnail}" alt="${item.product_name}" class="item-thumbnail" 
+                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Crect fill=%22%23ddd%22 width=%2280%22 height=%2280%22/%3E%3Ctext fill=%22%23999%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2212%22%3ENo Image%3C/text%3E%3C/svg%3E'">
+                <div class="item-info">
+                    <div class="item-id">${item.id}</div>
+                    <div class="item-name">${item.product_name}</div>
+                    <div class="item-sku">SKU: ${item.sku}</div>
+                </div>
+                <div class="item-details">
+                    <span>$${item.price.toFixed(2)} × ${item.qty}</span>
+                    <span class="item-total">$${itemTotal.toFixed(2)}</span>
+                </div>
+            </div>
+        `;
+    });
+    
+    // Format timestamp
+    const orderDate = new Date(order.timestamp);
+    const formattedDate = orderDate.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    orderDetailsEl.innerHTML = `
+        <div class="order-details-content">
+            <div class="order-header">
+                <h3>${order.id}</h3>
+                <p class="customer-name">${order.customerName}</p>
+                <p class="order-timestamp">${formattedDate}</p>
+            </div>
+            
+            <div class="items-section">
+                <h4>Items (${order.itemCount})</h4>
+                ${itemsHtml}
+            </div>
+            
+            <div class="order-total-section">
+                <div class="detail-row total-row">
+                    <span class="detail-label">Total Amount:</span>
+                    <span class="detail-value total">$${order.total.toFixed(2)}</span>
+                </div>
+            </div>
+            
+            <button class="add-to-order-btn" onclick="addToOrder()">Add to Order</button>
+        </div>
+    `;
+}
+
+// Add to Order function
+function addToOrder() {
+    if (!selectedOrderId) {
+        alert('Please select an order first');
+        return;
+    }
+    
+    const order = orders.find(o => o.id === selectedOrderId);
+    
+    // Here you can add your logic to POST to an endpoint
+    console.log('Adding to order:', order);
+    alert(`Order ${selectedOrderId} for ${order.customerName} added successfully!`);
+    
+    // Example POST request (uncomment and modify as needed):
+    /*
+    fetch('https://X/test/add-order', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(order)
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Order added successfully!');
+        console.log('Success:', data);
+    })
+    .catch((error) => {
+        alert('Error adding order');
+        console.error('Error:', error);
+    });
+    */
+}
+
+// Mock data for testing
+function useMockData() {
+    const mockApiResponse = {
+        "orders": [
+            {
+                "id": "3901234567",
+                "customer_name": "Alice Johnson",
+                "timestamp": "2025-01-15T10:24:30Z",
+                "items": [
+                    {
+                        "id": "1256347801",
+                        "sku": "MW0MW10800C1Z",
+                        "product_name": "Slim Jersey Crew Neck T-Shirt",
+                        "price": 40.00,
+                        "qty": 2,
+                        "thumbnail": "https://tommy-europe.scene7.com/is/image/TommyEurope/MW0MW10800_C1Z_productswatch"
+                    },
+                    {
+                        "id": "1256347802",
+                        "sku": "DW0DW224541BK",
+                        "product_name": "Sylvia High Rise Flared Jeans",
+                        "price": 85.00,
+                        "qty": 1,
+                        "thumbnail": "https://tommy-europe.scene7.com/is/image/TommyEurope/DW0DW22454_1BK_productswatch"
+                    }
+                ]
+            },
+            {
+                "id": "3901234570",
+                "customer_name": "Brian Smith",
+                "timestamp": "2025-01-15T11:05:10Z",
+                "items": [
+                    {
+                        "id": "1256347810",
+                        "sku": "MW0MW11599L6K",
+                        "product_name": "Logo Embroidery Flex Fleece Hoody",
+                        "price": 110.00,
+                        "qty": 1,
+                        "thumbnail": "https://tommy-europe.scene7.com/is/image/TommyEurope/MW0MW11599_L6K_productswatch"
+                    },
+                    {
+                        "id": "1256347811",
+                        "sku": "AM0AM12020C1G",
+                        "product_name": "Heritage Logo Baseball Cap",
+                        "price": 28.00,
+                        "qty": 1,
+                        "thumbnail": "https://tommy-europe.scene7.com/is/image/TommyEurope/AM0AM12020_C1G_productswatch"
+                    },
+                    {
+                        "id": "1256347812",
+                        "sku": "08A1371111085",
+                        "product_name": "2-Pack Classic Flag Embroidery Socks",
+                        "price": 14.00,
+                        "qty": 2,
+                        "thumbnail": "https://tommy-europe.scene7.com/is/image/TommyEurope/08A1371111_085_productswatch"
+                    }
+                ]
+            },
+            {
+                "id": "3901234575",
+                "customer_name": "Carla Reyes",
+                "timestamp": "2025-01-15T12:40:55Z",
+                "items": [
+                    {
+                        "id": "1256347890",
+                        "sku": "MW0MW38905DW5",
+                        "product_name": "Logo Patch Hooded Jacket",
+                        "price": 138.00,
+                        "qty": 1,
+                        "thumbnail": "https://tommy-europe.scene7.com/is/image/TommyEurope/MW0MW38905_DW5_productswatch"
+                    }
+                ]
+            }
+        ]
+    };
+    
+    orders = parseOrdersData(mockApiResponse);
+    renderOrderList();
+}
