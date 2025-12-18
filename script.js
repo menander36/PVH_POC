@@ -174,16 +174,46 @@ function addToOrder() {
     // Here you can add your logic to POST to an endpoint
     console.log('Adding to order:', order);
 
-     order.items.forEach(item => {
-        window.parent.postMessage({
-            method: "sendEvent",
-            payload: {
-            "eventName": "QuantitySellProduct",
-            "eventData": { "enactor.mfc.ProductCode": item.sku, "enactor.mfc.ProductQuantity": 1.0}
+    try {
+
+        order.items.forEach(item => {
+            const response = fetch('http://35.176.91.217:39833/WebRestApi/rest/baskets/PRIMARY/items?updatePromotions=true&returnBasket=true', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                'subject':'1'
+                },
+                body: JSON.stringify({
+                    "itemId" : item.sku,
+                    "itemType" : "PRODUCT",
+                    "quantity" : item.qty,
+                    "forOrder": false,
+                    "returnBasket" : false
+                    })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error: ${response.status}`);
             }
-        },"*");
+
+            const data =  response.json();
+            console.log(data);
+        });
+    
+    } catch (error) {
+        console.error('Request failed:', error);
+    }
+
+    //  order.items.forEach(item => {
+    //     window.parent.postMessage({
+    //         method: "sendEvent",
+    //         payload: {
+    //         "eventName": "QuantitySellProduct",
+    //         "eventData": { "enactor.mfc.ProductCode": item.sku, "enactor.mfc.ProductQuantity": 1.0}
+    //         }
+    //     },"*");
         
-    });
+    // });
 
     alert(`Order ${selectedOrderId} for ${order.customerName} added successfully!`);
     
