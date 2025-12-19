@@ -225,7 +225,7 @@ function addToOrder() {
         
     // });
 
-    alert(`Order ${selectedOrderId} for ${order.customerName} added successfully!`);
+    // alert(`Order ${selectedOrderId} for ${order.customerName} added successfully!`);
     
     // Example POST request (uncomment and modify as needed):
     /*
