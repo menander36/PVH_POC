@@ -174,35 +174,45 @@ function addToOrder() {
     // Here you can add your logic to POST to an endpoint
     console.log('Adding to order:', order);
 
-    try {
+    // Call AddWebOrderToBasket process on parent POS
 
-        order.items.forEach(item => {
-            const response = fetch('http://18.169.109.22:39833/WebRestApi/rest/baskets/PRIMARY/items?updatePromotions=true&returnBasket=false', {
-                method: 'POST',
-                headers: {
-                'Content-Type': 'application/json',
-                'subject':'1'
-                },
-                body: JSON.stringify({
-                    itemId : '500100',
-                    itemType : 'PRODUCT',
-                    quantity : item.qty,
-                    forOrder : false,
-                    returnBasket : false
-                    })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error: ${response.status}`);
+    window.parent.postMessage({
+            method: "sendEvent",
+            payload: {
+            "eventName": "PVHAddWebOrderToBasket",
+            "eventData": { "enactor.pvh.Order": JSON.stringify(order)}
             }
+        },"*");
 
-            const data =  response.json();
-            console.log(data);
-        });
+    // try {
+
+    //     order.items.forEach(item => {
+    //         const response = fetch('http://18.169.109.22:39833/WebRestApi/rest/baskets/PRIMARY/items?updatePromotions=true&returnBasket=false', {
+    //             method: 'POST',
+    //             headers: {
+    //             'Content-Type': 'application/json',
+    //             'subject':'1'
+    //             },
+    //             body: JSON.stringify({
+    //                 itemId : item.sku,
+    //                 itemType : 'PRODUCT',
+    //                 quantity : item.qty,
+    //                 forOrder : false,
+    //                 returnBasket : false
+    //                 })
+    //         });
+
+    //         if (!response.ok) {
+    //             throw new Error(`HTTP error: ${response.status}`);
+    //         }
+
+    //         const data =  response.json();
+    //         console.log(data);
+    //     });
     
-    } catch (error) {
-        console.error('Request failed:', error);
-    }
+    // } catch (error) {
+    //     console.error('Request failed:', error);
+    // }
 
     //  order.items.forEach(item => {
     //     window.parent.postMessage({
