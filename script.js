@@ -184,68 +184,9 @@ function addToOrder() {
             }
         },"*");
 
-    // try {
-
-    //     order.items.forEach(item => {
-    //         const response = fetch('http://18.169.109.22:39833/WebRestApi/rest/baskets/PRIMARY/items?updatePromotions=true&returnBasket=false', {
-    //             method: 'POST',
-    //             headers: {
-    //             'Content-Type': 'application/json',
-    //             'subject':'1'
-    //             },
-    //             body: JSON.stringify({
-    //                 itemId : item.sku,
-    //                 itemType : 'PRODUCT',
-    //                 quantity : item.qty,
-    //                 forOrder : false,
-    //                 returnBasket : false
-    //                 })
-    //         });
-
-    //         if (!response.ok) {
-    //             throw new Error(`HTTP error: ${response.status}`);
-    //         }
-
-    //         const data =  response.json();
-    //         console.log(data);
-    //     });
-    
-    // } catch (error) {
-    //     console.error('Request failed:', error);
-    // }
-
-    //  order.items.forEach(item => {
-    //     window.parent.postMessage({
-    //         method: "sendEvent",
-    //         payload: {
-    //         "eventName": "QuantitySellProduct",
-    //         "eventData": { "enactor.mfc.ProductCode": item.sku, "enactor.mfc.ProductQuantity": 1.0}
-    //         }
-    //     },"*");
-        
-    // });
 
     // alert(`Order ${selectedOrderId} for ${order.customerName} added successfully!`);
     
-    // Example POST request (uncomment and modify as needed):
-    /*
-    fetch('https://X/test/add-order', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(order)
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert('Order added successfully!');
-        console.log('Success:', data);
-    })
-    .catch((error) => {
-        alert('Error adding order');
-        console.error('Error:', error);
-    });
-    */
 }
 
 // Mock data for testing
